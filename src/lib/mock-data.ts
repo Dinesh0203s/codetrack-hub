@@ -3,12 +3,14 @@ import { User, PlatformStats, LeetCodeStats, CodeforcesStats, CodeChefStats } fr
 export const mockUsers: User[] = [
   {
     id: '1',
+    username: 'alexchen',
     name: 'Alex Chen',
     email: 'alex.chen@example.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=alex',
     role: 'SUPER_ADMIN',
     department: 'Computer Science',
     isActive: true,
+    isOnboarded: true,
     createdAt: '2024-01-15T10:30:00Z',
     platformUsernames: {
       leetcode: 'alexchen',
@@ -18,12 +20,14 @@ export const mockUsers: User[] = [
   },
   {
     id: '2',
+    username: 'sarahj',
     name: 'Sarah Johnson',
     email: 'sarah.j@example.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=sarah',
     role: 'ADMIN',
     department: 'Information Technology',
     isActive: true,
+    isOnboarded: true,
     createdAt: '2024-02-20T14:15:00Z',
     platformUsernames: {
       leetcode: 'sarahj',
@@ -33,12 +37,14 @@ export const mockUsers: User[] = [
   },
   {
     id: '3',
+    username: 'mikerivera',
     name: 'Mike Rivera',
     email: 'mike.r@example.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=mike',
     role: 'USER',
     department: 'Computer Science',
     isActive: true,
+    isOnboarded: true,
     createdAt: '2024-03-10T09:00:00Z',
     platformUsernames: {
       leetcode: 'mikedev',
@@ -47,12 +53,14 @@ export const mockUsers: User[] = [
   },
   {
     id: '4',
+    username: 'emilyzhang',
     name: 'Emily Zhang',
     email: 'emily.z@example.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=emily',
     role: 'USER',
     department: 'Data Science',
     isActive: true,
+    isOnboarded: true,
     createdAt: '2024-03-15T11:45:00Z',
     platformUsernames: {
       leetcode: 'emilyzhang',
@@ -61,12 +69,14 @@ export const mockUsers: User[] = [
   },
   {
     id: '5',
+    username: 'jameswilson',
     name: 'James Wilson',
     email: 'james.w@example.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=james',
     role: 'USER',
     department: 'Software Engineering',
     isActive: false,
+    isOnboarded: true,
     createdAt: '2024-04-01T16:30:00Z',
     platformUsernames: {
       codeforces: 'jameswilson',

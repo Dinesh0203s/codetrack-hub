@@ -40,11 +40,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = () => {
-    // Mock Google OAuth - use first mock user as logged in user
-    const user = mockUsers[0];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    // Mock Google OAuth - create new user without onboarding completed
+    const newUser: User = {
+      id: `user_${Date.now()}`,
+      name: 'New User',
+      email: 'newuser@example.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=newuser',
+      role: 'USER',
+      department: '',
+      isActive: true,
+      isOnboarded: false,
+      createdAt: new Date().toISOString(),
+      platformUsernames: {},
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
     setAuthState({
-      user,
+      user: newUser,
       isAuthenticated: true,
       isLoading: false,
     });
