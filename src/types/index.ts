@@ -2,6 +2,18 @@ export type Role = 'USER' | 'ADMIN' | 'SUPER_ADMIN';
 
 export type Platform = 'leetcode' | 'codeforces' | 'codechef';
 
+export type Department = 'CSE' | 'CSBS' | 'AIDS' | 'AIML' | 'ECE' | 'EEE' | 'CSE_CYBER';
+
+export const DEPARTMENTS: { value: Department; label: string }[] = [
+  { value: 'CSE', label: 'CSE' },
+  { value: 'CSBS', label: 'CSBS' },
+  { value: 'AIDS', label: 'AI & DS' },
+  { value: 'AIML', label: 'AI & ML' },
+  { value: 'ECE', label: 'ECE' },
+  { value: 'EEE', label: 'EEE' },
+  { value: 'CSE_CYBER', label: 'CSE (Cybersecurity)' },
+];
+
 export interface User {
   id: string;
   username?: string;
@@ -10,6 +22,7 @@ export interface User {
   avatar: string;
   role: Role;
   department: string;
+  yearOfPassout?: number;
   isActive: boolean;
   isOnboarded: boolean;
   createdAt: string;
