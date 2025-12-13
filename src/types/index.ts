@@ -4,12 +4,14 @@ export type Platform = 'leetcode' | 'codeforces' | 'codechef';
 
 export interface User {
   id: string;
+  username?: string;
   name: string;
   email: string;
   avatar: string;
   role: Role;
   department: string;
   isActive: boolean;
+  isOnboarded: boolean;
   createdAt: string;
   platformUsernames: {
     leetcode?: string;
