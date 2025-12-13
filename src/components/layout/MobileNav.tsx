@@ -7,11 +7,13 @@ import {
   Users,
   Settings,
   BarChart3,
+  PieChart,
 } from 'lucide-react';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Home', path: '/dashboard', roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
   { icon: Trophy, label: 'Ranks', path: '/leaderboard', roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
+  { icon: PieChart, label: 'Stats', path: '/stats', roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
   { icon: Users, label: 'Users', path: '/admin/users', roles: ['ADMIN', 'SUPER_ADMIN'] },
   { icon: BarChart3, label: 'Reports', path: '/admin/reports', roles: ['ADMIN', 'SUPER_ADMIN'] },
   { icon: Settings, label: 'Settings', path: '/settings', roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
