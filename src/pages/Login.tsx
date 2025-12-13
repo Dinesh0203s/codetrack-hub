@@ -51,7 +51,7 @@ export default function Login() {
               </div>
             </div>
             <h1 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-              CP Tracker
+              Code Tracker
             </h1>
             <p className="mt-2 text-base text-muted-foreground md:text-lg">
               Your competitive programming analytics hub

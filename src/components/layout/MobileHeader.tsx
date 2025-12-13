@@ -47,7 +47,7 @@ export function MobileHeader() {
           <Code2 className="h-4 w-4 text-primary-foreground" />
         </div>
         <span className="font-display text-base font-bold text-foreground">
-          CP Tracker
+          Code Tracker
         </span>
       </div>
 
