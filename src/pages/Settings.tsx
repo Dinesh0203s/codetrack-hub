@@ -11,13 +11,14 @@ import { departments } from '@/lib/mock-data';
 import { Save, Bell, Moon, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import { useTheme } from 'next-themes';
 
 export default function Settings() {
   const { user, updateUser } = useAuth();
+  const { theme, setTheme } = useTheme();
   const [name, setName] = useState(user?.name || '');
   const [department, setDepartment] = useState(user?.department || '');
   const [notifications, setNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(true);
 
   if (!user) return null;
 
@@ -116,11 +117,14 @@ export default function Settings() {
                   <div>
                     <p className="font-medium text-foreground">Dark Mode</p>
                     <p className="text-sm text-muted-foreground">
-                      Use dark theme (always on)
+                      Toggle between dark and light theme
                     </p>
                   </div>
                 </div>
-                <Switch checked={darkMode} onCheckedChange={setDarkMode} />
+                <Switch 
+                  checked={theme === 'dark'} 
+                  onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')} 
+                />
               </div>
 
               <div className="flex items-center justify-between rounded-lg bg-secondary/50 p-4">
