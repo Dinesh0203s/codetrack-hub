@@ -71,11 +71,11 @@ export default function ReportsPage() {
 
   return (
     <AppLayout requiredRoles={['ADMIN', 'SUPER_ADMIN']}>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Report Generation</h1>
-          <p className="text-muted-foreground">
-            Generate and share leaderboard reports with images
+          <h1 className="text-2xl font-bold text-foreground md:text-3xl">Report Generation</h1>
+          <p className="text-sm text-muted-foreground md:text-base">
+            Generate and share leaderboard reports
           </p>
         </div>
 

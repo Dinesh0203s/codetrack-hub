@@ -36,24 +36,24 @@ export default function Login() {
     <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -left-1/4 -top-1/4 h-[600px] w-[600px] rounded-full bg-primary/5 blur-3xl" />
-        <div className="absolute -bottom-1/4 -right-1/4 h-[600px] w-[600px] rounded-full bg-accent/5 blur-3xl" />
+        <div className="absolute -left-1/4 -top-1/4 h-[400px] w-[400px] rounded-full bg-primary/5 blur-3xl md:h-[600px] md:w-[600px]" />
+        <div className="absolute -bottom-1/4 -right-1/4 h-[400px] w-[400px] rounded-full bg-accent/5 blur-3xl md:h-[600px] md:w-[600px]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background))_70%)]" />
       </div>
 
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4">
-        <div className="w-full max-w-md space-y-8">
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md space-y-6 md:space-y-8">
           {/* Logo & Title */}
           <div className="text-center">
-            <div className="mb-6 flex justify-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary glow-primary">
-                <Code2 className="h-8 w-8 text-primary-foreground" />
+            <div className="mb-4 flex justify-center md:mb-6">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-primary glow-primary md:h-16 md:w-16">
+                <Code2 className="h-7 w-7 text-primary-foreground md:h-8 md:w-8" />
               </div>
             </div>
-            <h1 className="font-display text-4xl font-bold tracking-tight text-foreground">
+            <h1 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
               CP Tracker
             </h1>
-            <p className="mt-2 text-lg text-muted-foreground">
+            <p className="mt-2 text-base text-muted-foreground md:text-lg">
               Your competitive programming analytics hub
             </p>
           </div>

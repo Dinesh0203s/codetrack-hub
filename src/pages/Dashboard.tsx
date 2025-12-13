@@ -19,12 +19,12 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl font-bold text-foreground md:text-3xl">Dashboard</h1>
+            <p className="text-sm text-muted-foreground md:text-base">
               Track your competitive programming progress
             </p>
           </div>
