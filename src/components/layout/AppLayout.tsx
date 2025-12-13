@@ -46,7 +46,7 @@ export function AppLayout({ children, requiredRoles }: AppLayoutProps) {
       
       {/* Main Content - responsive padding */}
       <main className="md:pl-64">
-        <div className="min-h-screen p-4 pb-20 pt-18 md:p-6 md:pb-6 md:pt-6">{children}</div>
+        <div className="min-h-screen p-4 pb-20 pt-16 md:p-6 md:pb-6 md:pt-6">{children}</div>
       </main>
     </div>
   );
