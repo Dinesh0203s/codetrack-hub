@@ -6,22 +6,32 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { mockUsers, mockLeetCodeStats, mockCodeforcesStats, mockCodeChefStats, departments } from '@/lib/mock-data';
+import { mockUsers, mockLeetCodeStats, mockCodeforcesStats, mockCodeChefStats } from '@/lib/mock-data';
 import { Trophy, Medal, Award, RefreshCw, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Platform } from '@/types';
+import { Platform, DEPARTMENTS } from '@/types';
 
 type SortField = 'rating' | 'solved' | 'contests';
+
+const currentYear = new Date().getFullYear();
+const passoutYears = Array.from({ length: 6 }, (_, i) => currentYear + i);
 
 export default function Leaderboard() {
   const [platform, setPlatform] = useState<Platform>('leetcode');
   const [department, setDepartment] = useState<string>('all');
+  const [yearFilter, setYearFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<SortField>('rating');
 
   const getLeaderboardData = () => {
-    const users = department === 'all' 
-      ? mockUsers.filter(u => u.isActive)
-      : mockUsers.filter(u => u.isActive && u.department === department);
+    let users = mockUsers.filter(u => u.isActive);
+    
+    if (department !== 'all') {
+      users = users.filter(u => u.department === department);
+    }
+    
+    if (yearFilter !== 'all') {
+      users = users.filter(u => u.yearOfPassout === parseInt(yearFilter));
+    }
 
     const usersWithStats = users.map(user => {
       let stats: any = null;
@@ -136,15 +146,27 @@ export default function Leaderboard() {
                 </TabsList>
               </Tabs>
 
-              <div className="flex w-full gap-2 sm:w-auto">
+              <div className="flex w-full flex-wrap gap-2 sm:w-auto">
                 <Select value={department} onValueChange={setDepartment}>
                   <SelectTrigger className="flex-1 bg-secondary sm:w-[180px]">
                     <SelectValue placeholder="Department" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Departments</SelectItem>
-                    {departments.map(dept => (
-                      <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                    {DEPARTMENTS.map(dept => (
+                      <SelectItem key={dept.value} value={dept.value}>{dept.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={yearFilter} onValueChange={setYearFilter}>
+                  <SelectTrigger className="flex-1 bg-secondary sm:w-[140px]">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Years</SelectItem>
+                    {passoutYears.map(year => (
+                      <SelectItem key={year} value={String(year)}>{year}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
