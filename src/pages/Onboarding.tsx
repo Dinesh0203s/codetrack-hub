@@ -5,9 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { ArrowRight, User, Code, CheckCircle2 } from 'lucide-react';
 import { z } from 'zod';
+import { DEPARTMENTS, Department } from '@/types';
+
+const currentYear = new Date().getFullYear();
+const passoutYears = Array.from({ length: 6 }, (_, i) => currentYear + i);
 
 const onboardingSchema = z.object({
   username: z.string()
@@ -17,6 +22,8 @@ const onboardingSchema = z.object({
   name: z.string()
     .min(2, 'Name must be at least 2 characters')
     .max(50, 'Name must be less than 50 characters'),
+  department: z.string().min(1, 'Please select a department'),
+  yearOfPassout: z.number().min(currentYear, 'Please select a valid year'),
   leetcode: z.string().max(50).optional().or(z.literal('')),
   codeforces: z.string().max(50).optional().or(z.literal('')),
   codechef: z.string().max(50).optional().or(z.literal('')),
@@ -34,6 +41,8 @@ export default function Onboarding() {
   const [formData, setFormData] = useState({
     username: '',
     name: user?.name || '',
+    department: '' as Department | '',
+    yearOfPassout: 0,
     leetcode: '',
     codeforces: '',
     codechef: '',
@@ -65,9 +74,11 @@ export default function Onboarding() {
   };
 
   const validateStep1 = () => {
-    const result = onboardingSchema.pick({ username: true, name: true }).safeParse({
+    const result = onboardingSchema.pick({ username: true, name: true, department: true, yearOfPassout: true }).safeParse({
       username: formData.username,
       name: formData.name,
+      department: formData.department,
+      yearOfPassout: formData.yearOfPassout,
     });
 
     if (!result.success) {
@@ -124,6 +135,8 @@ export default function Onboarding() {
     updateUser({
       username: formData.username,
       name: formData.name,
+      department: formData.department,
+      yearOfPassout: formData.yearOfPassout,
       platformUsernames: {
         leetcode: formData.leetcode || undefined,
         codeforces: formData.codeforces || undefined,
@@ -202,6 +215,54 @@ export default function Onboarding() {
                     />
                     {errors.name && (
                       <p className="text-sm text-destructive">{errors.name}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="department">
+                      Department <span className="text-destructive">*</span>
+                    </Label>
+                    <Select
+                      value={formData.department}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, department: value as Department }))}
+                    >
+                      <SelectTrigger className="bg-secondary/50">
+                        <SelectValue placeholder="Select your department" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DEPARTMENTS.map((dept) => (
+                          <SelectItem key={dept.value} value={dept.value}>
+                            {dept.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.department && (
+                      <p className="text-sm text-destructive">{errors.department}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="yearOfPassout">
+                      Year of Passout <span className="text-destructive">*</span>
+                    </Label>
+                    <Select
+                      value={formData.yearOfPassout ? String(formData.yearOfPassout) : ''}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, yearOfPassout: parseInt(value) }))}
+                    >
+                      <SelectTrigger className="bg-secondary/50">
+                        <SelectValue placeholder="Select your passout year" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {passoutYears.map((year) => (
+                          <SelectItem key={year} value={String(year)}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.yearOfPassout && (
+                      <p className="text-sm text-destructive">{errors.yearOfPassout}</p>
                     )}
                   </div>
 
