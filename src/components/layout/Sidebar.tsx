@@ -43,7 +43,7 @@ export function Sidebar() {
             <Code2 className="h-5 w-5 text-primary-foreground" />
           </div>
           <span className="font-display text-lg font-bold text-foreground">
-            CP Tracker
+            Code Tracker
           </span>
         </div>
 
