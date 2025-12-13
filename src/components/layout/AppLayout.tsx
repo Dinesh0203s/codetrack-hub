@@ -2,6 +2,8 @@ import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Sidebar } from './Sidebar';
+import { MobileHeader } from './MobileHeader';
+import { MobileNav } from './MobileNav';
 import { Loader2 } from 'lucide-react';
 
 interface AppLayoutProps {
@@ -33,9 +35,18 @@ export function AppLayout({ children, requiredRoles }: AppLayoutProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar />
-      <main className="pl-64">
-        <div className="min-h-screen p-6">{children}</div>
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block">
+        <Sidebar />
+      </div>
+      
+      {/* Mobile Header & Bottom Nav */}
+      <MobileHeader />
+      <MobileNav />
+      
+      {/* Main Content - responsive padding */}
+      <main className="md:pl-64">
+        <div className="min-h-screen p-4 pb-20 pt-18 md:p-6 md:pb-6 md:pt-6">{children}</div>
       </main>
     </div>
   );

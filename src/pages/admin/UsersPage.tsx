@@ -65,44 +65,44 @@ export default function UsersPage() {
 
   return (
     <AppLayout requiredRoles={['ADMIN', 'SUPER_ADMIN']}>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">User Management</h1>
-          <p className="text-muted-foreground">
-            Manage users, roles, and access permissions
+          <h1 className="text-2xl font-bold text-foreground md:text-3xl">User Management</h1>
+          <p className="text-sm text-muted-foreground md:text-base">
+            Manage users, roles, and access
           </p>
         </div>
 
         {/* Stats */}
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
           <Card className="glass">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-foreground">{users.length}</div>
-              <p className="text-sm text-muted-foreground">Total Users</p>
+            <CardContent className="p-4 md:pt-6">
+              <div className="text-xl font-bold text-foreground md:text-2xl">{users.length}</div>
+              <p className="text-xs text-muted-foreground md:text-sm">Total Users</p>
             </CardContent>
           </Card>
           <Card className="glass">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-primary">
+            <CardContent className="p-4 md:pt-6">
+              <div className="text-xl font-bold text-primary md:text-2xl">
                 {users.filter(u => u.isActive).length}
               </div>
-              <p className="text-sm text-muted-foreground">Active Users</p>
+              <p className="text-xs text-muted-foreground md:text-sm">Active</p>
             </CardContent>
           </Card>
           <Card className="glass">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-accent">
+            <CardContent className="p-4 md:pt-6">
+              <div className="text-xl font-bold text-accent md:text-2xl">
                 {users.filter(u => u.role === 'ADMIN').length}
               </div>
-              <p className="text-sm text-muted-foreground">Admins</p>
+              <p className="text-xs text-muted-foreground md:text-sm">Admins</p>
             </CardContent>
           </Card>
           <Card className="glass">
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-foreground">
+            <CardContent className="p-4 md:pt-6">
+              <div className="text-xl font-bold text-foreground md:text-2xl">
                 {departments.length}
               </div>
-              <p className="text-sm text-muted-foreground">Departments</p>
+              <p className="text-xs text-muted-foreground md:text-sm">Departments</p>
             </CardContent>
           </Card>
         </div>

@@ -99,20 +99,20 @@ export default function Leaderboard() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Leaderboard</h1>
-            <p className="text-muted-foreground">
-              Compare rankings across competitive programming platforms
+            <h1 className="text-2xl font-bold text-foreground md:text-3xl">Leaderboard</h1>
+            <p className="text-sm text-muted-foreground md:text-base">
+              Compare rankings across platforms
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
               <RefreshCw className="mr-2 h-4 w-4" />
               Refresh
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
               <Download className="mr-2 h-4 w-4" />
               Export
             </Button>
@@ -123,22 +123,22 @@ export default function Leaderboard() {
           <CardHeader>
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <Tabs value={platform} onValueChange={(v) => setPlatform(v as Platform)}>
-                <TabsList className="bg-secondary">
-                  <TabsTrigger value="leetcode" className="gap-2">
-                    <span>🟡</span> LeetCode
+                <TabsList className="h-auto flex-wrap bg-secondary">
+                  <TabsTrigger value="leetcode" className="gap-1 text-xs sm:gap-2 sm:text-sm">
+                    <span>🟡</span> <span className="hidden xs:inline">LeetCode</span><span className="xs:hidden">LC</span>
                   </TabsTrigger>
-                  <TabsTrigger value="codeforces" className="gap-2">
-                    <span>🔵</span> Codeforces
+                  <TabsTrigger value="codeforces" className="gap-1 text-xs sm:gap-2 sm:text-sm">
+                    <span>🔵</span> <span className="hidden xs:inline">Codeforces</span><span className="xs:hidden">CF</span>
                   </TabsTrigger>
-                  <TabsTrigger value="codechef" className="gap-2">
-                    <span>🟠</span> CodeChef
+                  <TabsTrigger value="codechef" className="gap-1 text-xs sm:gap-2 sm:text-sm">
+                    <span>🟠</span> <span className="hidden xs:inline">CodeChef</span><span className="xs:hidden">CC</span>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
 
-              <div className="flex gap-2">
+              <div className="flex w-full gap-2 sm:w-auto">
                 <Select value={department} onValueChange={setDepartment}>
-                  <SelectTrigger className="w-[180px] bg-secondary">
+                  <SelectTrigger className="flex-1 bg-secondary sm:w-[180px]">
                     <SelectValue placeholder="Department" />
                   </SelectTrigger>
                   <SelectContent>
@@ -150,12 +150,12 @@ export default function Leaderboard() {
                 </Select>
 
                 <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortField)}>
-                  <SelectTrigger className="w-[140px] bg-secondary">
+                  <SelectTrigger className="flex-1 bg-secondary sm:w-[140px]">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="rating">Rating</SelectItem>
-                    <SelectItem value="solved">Problems Solved</SelectItem>
+                    <SelectItem value="solved">Solved</SelectItem>
                     <SelectItem value="contests">Contests</SelectItem>
                   </SelectContent>
                 </Select>
@@ -173,48 +173,53 @@ export default function Leaderboard() {
                   <div
                     key={item.user.id}
                     className={cn(
-                      'flex items-center gap-4 rounded-lg border border-border/50 bg-secondary/30 p-4 transition-colors hover:bg-secondary/50',
+                      'flex flex-col gap-3 rounded-lg border border-border/50 bg-secondary/30 p-3 transition-colors hover:bg-secondary/50 sm:flex-row sm:items-center sm:gap-4 sm:p-4',
                       index === 0 && 'border-yellow-400/30 bg-yellow-400/5',
                       index === 1 && 'border-gray-400/30 bg-gray-400/5',
                       index === 2 && 'border-amber-600/30 bg-amber-600/5'
                     )}
                   >
-                    <div className="flex w-8 justify-center">
-                      {getRankIcon(index)}
-                    </div>
-                    <Avatar className="h-10 w-10 border border-border">
-                      <AvatarImage src={item.user.avatar} alt={item.user.name} />
-                      <AvatarFallback>{item.user.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-foreground">
-                          {item.user.name}
-                        </span>
-                        <Badge variant="outline" className="text-xs">
-                          {item.user.department}
-                        </Badge>
+                    {/* Top row - rank, avatar, name */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex w-6 justify-center sm:w-8">
+                        {getRankIcon(index)}
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        @{item.user.platformUsernames[platform] || 'N/A'}
-                      </p>
+                      <Avatar className="h-9 w-9 border border-border sm:h-10 sm:w-10">
+                        <AvatarImage src={item.user.avatar} alt={item.user.name} />
+                        <AvatarFallback>{item.user.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                          <span className="truncate font-medium text-foreground text-sm sm:text-base">
+                            {item.user.name}
+                          </span>
+                          <Badge variant="outline" className="text-[10px] sm:text-xs">
+                            {item.user.department}
+                          </Badge>
+                        </div>
+                        <p className="truncate text-xs text-muted-foreground">
+                          @{item.user.platformUsernames[platform] || 'N/A'}
+                        </p>
+                      </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-6 text-right">
+                    
+                    {/* Stats row */}
+                    <div className="grid grid-cols-3 gap-2 rounded-lg bg-background/50 p-2 text-center sm:ml-auto sm:gap-6 sm:bg-transparent sm:p-0 sm:text-right">
                       <div>
-                        <p className="text-xs text-muted-foreground">Rating</p>
-                        <p className={cn('font-mono font-semibold', platformConfig[platform].color)}>
+                        <p className="text-[10px] text-muted-foreground sm:text-xs">Rating</p>
+                        <p className={cn('font-mono text-sm font-semibold sm:text-base', platformConfig[platform].color)}>
                           {item.rating}
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">Solved</p>
-                        <p className="font-mono font-semibold text-foreground">
+                        <p className="text-[10px] text-muted-foreground sm:text-xs">Solved</p>
+                        <p className="font-mono text-sm font-semibold text-foreground sm:text-base">
                           {item.solved}
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">Contests</p>
-                        <p className="font-mono font-semibold text-foreground">
+                        <p className="text-[10px] text-muted-foreground sm:text-xs">Contests</p>
+                        <p className="font-mono text-sm font-semibold text-foreground sm:text-base">
                           {item.contests}
                         </p>
                       </div>
