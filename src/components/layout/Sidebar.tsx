@@ -15,9 +15,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 
+import { PieChart } from 'lucide-react';
+
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
   { icon: Trophy, label: 'Leaderboard', path: '/leaderboard', roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
+  { icon: PieChart, label: 'Stats', path: '/stats', roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
   { icon: Users, label: 'Users', path: '/admin/users', roles: ['ADMIN', 'SUPER_ADMIN'] },
   { icon: BarChart3, label: 'Reports', path: '/admin/reports', roles: ['ADMIN', 'SUPER_ADMIN'] },
   { icon: Shield, label: 'Roles', path: '/admin/roles', roles: ['SUPER_ADMIN'] },
