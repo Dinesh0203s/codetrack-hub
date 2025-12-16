@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -48,15 +48,19 @@ export default function Onboarding() {
     codechef: '',
   });
 
-  // Redirect if not authenticated
-  if (!isAuthenticated) {
-    navigate('/');
-    return null;
-  }
+  // Redirect logic inside an effect to avoid render-time navigation warnings
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/', { replace: true });
+      return;
+    }
+    if (user?.isOnboarded) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, user?.isOnboarded, navigate]);
 
-  // Redirect if already onboarded
-  if (user?.isOnboarded) {
-    navigate('/dashboard');
+  // During redirect decision, render nothing
+  if (!isAuthenticated || user?.isOnboarded) {
     return null;
   }
 

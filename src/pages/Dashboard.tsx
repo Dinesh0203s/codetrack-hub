@@ -1,3 +1,4 @@
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { PlatformCard } from '@/components/stats/PlatformCard';
@@ -9,9 +10,20 @@ import { Badge } from '@/components/ui/badge';
 import { CalendarDays, Mail, Building } from 'lucide-react';
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
+  const platformUsernames = user?.platformUsernames ?? {};
 
-  if (!user) return null;
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-sm text-muted-foreground">Loading dashboard...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/" replace />;
+  }
 
   const leetcodeStats = getPlatformStats(user.id, 'leetcode');
   const codeforcesStats = getPlatformStats(user.id, 'codeforces');
@@ -83,17 +95,17 @@ export default function Dashboard() {
                 <PlatformCard
                   platform="leetcode"
                   stats={leetcodeStats}
-                  username={user.platformUsernames.leetcode}
+                  username={platformUsernames.leetcode}
                 />
                 <PlatformCard
                   platform="codeforces"
                   stats={codeforcesStats}
-                  username={user.platformUsernames.codeforces}
+                  username={platformUsernames.codeforces}
                 />
                 <PlatformCard
                   platform="codechef"
                   stats={codechefStats}
-                  username={user.platformUsernames.codechef}
+                  username={platformUsernames.codechef}
                   className="md:col-span-2 xl:col-span-1"
                 />
               </CardContent>

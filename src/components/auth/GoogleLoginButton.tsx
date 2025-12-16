@@ -1,21 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
 export function GoogleLoginButton() {
   const { login } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogin = () => {
-    login();
-    navigate('/dashboard');
-  };
 
   return (
     <Button
-      onClick={handleLogin}
+      onClick={login}
       size="lg"
-      className="group relative h-14 w-full gap-3 overflow-hidden bg-secondary text-foreground hover:bg-secondary/80"
+      className="group relative h-14 w-full gap-3 overflow-hidden bg-secondary text-foreground"
+      data-testid="button-google-login"
     >
       <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 transition-opacity group-hover:opacity-100" />
       <svg

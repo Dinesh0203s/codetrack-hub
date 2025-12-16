@@ -36,7 +36,7 @@ export function UsernameForm() {
             </Label>
             <Input
               id="leetcode"
-              value={user?.platformUsernames.leetcode || 'Not set'}
+              value={user?.platformUsernames?.leetcode || 'Not set'}
               disabled
               className="bg-secondary/50 font-mono opacity-70"
             />
@@ -48,7 +48,7 @@ export function UsernameForm() {
             </Label>
             <Input
               id="codeforces"
-              value={user?.platformUsernames.codeforces || 'Not set'}
+              value={user?.platformUsernames?.codeforces || 'Not set'}
               disabled
               className="bg-secondary/50 font-mono opacity-70"
             />
@@ -60,7 +60,7 @@ export function UsernameForm() {
             </Label>
             <Input
               id="codechef"
-              value={user?.platformUsernames.codechef || 'Not set'}
+              value={user?.platformUsernames?.codechef || 'Not set'}
               disabled
               className="bg-secondary/50 font-mono opacity-70"
             />
