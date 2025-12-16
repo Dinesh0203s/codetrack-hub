@@ -11,9 +11,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 export function MobileHeader() {
-  const { user, logout } = useAuth();
+  const { profile, role, logout } = useAuth();
 
-  if (!user) return null;
+  if (!profile) return null;
 
   return (
     <header className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center justify-between border-b border-border bg-card/95 px-4 backdrop-blur-lg md:hidden">
@@ -32,18 +32,18 @@ export function MobileHeader() {
         <DropdownMenuTrigger asChild>
           <button className="rounded-full outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring">
             <Avatar className="h-8 w-8 border border-border">
-              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarImage src={profile.avatar || ''} alt={profile.name || ''} />
               <AvatarFallback className="bg-primary/10 text-xs text-primary">
-                {user.name.charAt(0)}
+                {(profile.name || 'U').charAt(0)}
               </AvatarFallback>
             </Avatar>
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48 bg-card">
           <DropdownMenuLabel>
-            <p className="font-medium">{user.name}</p>
+            <p className="font-medium">{profile.name}</p>
             <p className="text-xs font-normal text-muted-foreground">
-              {user.role.replace('_', ' ')}
+              {(role || 'USER').replace('_', ' ')}
             </p>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />

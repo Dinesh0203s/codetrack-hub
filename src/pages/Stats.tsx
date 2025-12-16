@@ -51,19 +51,17 @@ function ChartSkeleton() {
 }
 
 export default function Stats() {
-  const { user } = useAuth();
+  const { role } = useAuth();
   const [activeTab, setActiveTab] = useState('leetcode');
   const [isLoading, setIsLoading] = useState(false);
 
-  const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
+  const isAdmin = role === 'ADMIN' || role === 'SUPER_ADMIN';
 
-  // Compute LeetCode stats
+  // Compute LeetCode stats - for now use all mock data for admins
   const leetcodeData = useMemo(() => {
     const stats = isAdmin 
       ? Object.values(mockLeetCodeStats)
-      : user?.platformUsernames?.leetcode 
-        ? [mockLeetCodeStats[user.platformUsernames.leetcode]]
-        : [];
+      : [];
     
     const validStats = stats.filter(Boolean);
     const ratings = validStats.map(s => s.contestRating).filter(r => r > 0);
@@ -75,15 +73,13 @@ export default function Stats() {
       maxRating: ratings.length > 0 ? Math.max(...ratings) : 0,
       minRating: ratings.length > 0 ? Math.min(...ratings) : 0
     };
-  }, [isAdmin, user]);
+  }, [isAdmin]);
 
   // Compute Codeforces stats
   const codeforcesData = useMemo(() => {
     const stats = isAdmin 
       ? Object.values(mockCodeforcesStats)
-      : user?.platformUsernames?.codeforces 
-        ? [mockCodeforcesStats[user.platformUsernames.codeforces]]
-        : [];
+      : [];
     
     const validStats = stats.filter(Boolean);
     const ratings = validStats.map(s => s.currentRating).filter(r => r > 0);
@@ -95,15 +91,13 @@ export default function Stats() {
       maxRating: ratings.length > 0 ? Math.max(...ratings) : 0,
       minRating: ratings.length > 0 ? Math.min(...ratings) : 0
     };
-  }, [isAdmin, user]);
+  }, [isAdmin]);
 
   // Compute CodeChef stats
   const codechefData = useMemo(() => {
     const stats = isAdmin 
       ? Object.values(mockCodeChefStats)
-      : user?.platformUsernames?.codechef 
-        ? [mockCodeChefStats[user.platformUsernames.codechef]]
-        : [];
+      : [];
     
     const validStats = stats.filter(Boolean);
     const ratings = validStats.map(s => s.currentRating);
@@ -132,7 +126,7 @@ export default function Stats() {
       totalUsers: total,
       averageRating: ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 0
     };
-  }, [isAdmin, user]);
+  }, [isAdmin]);
 
   return (
     <AppLayout>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { ArrowRight, User, Code, CheckCircle2 } from 'lucide-react';
 import { z } from 'zod';
 import { DEPARTMENTS, Department } from '@/types';
+import { supabase } from '@/integrations/supabase/client';
 
 const currentYear = new Date().getFullYear();
 const passoutYears = Array.from({ length: 6 }, (_, i) => currentYear + i);
@@ -29,18 +30,16 @@ const onboardingSchema = z.object({
   codechef: z.string().max(50).optional().or(z.literal('')),
 });
 
-const REGISTERED_USERNAMES_KEY = 'cp_tracker_usernames';
-
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { user, updateUser, isAuthenticated } = useAuth();
+  const { user, profile, isAuthenticated, isLoading: authLoading, updateProfile, refreshProfile } = useAuth();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const [formData, setFormData] = useState({
     username: '',
-    name: user?.name || '',
+    name: profile?.name || '',
     department: '' as Department | '',
     yearOfPassout: 0,
     leetcode: '',
@@ -48,29 +47,45 @@ export default function Onboarding() {
     codechef: '',
   });
 
+  useEffect(() => {
+    if (profile?.name) {
+      setFormData(prev => ({ ...prev, name: profile.name || '' }));
+    }
+  }, [profile?.name]);
+
   // Redirect if not authenticated
-  if (!isAuthenticated) {
-    navigate('/');
-    return null;
-  }
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      navigate('/');
+    }
+  }, [authLoading, isAuthenticated, navigate]);
 
   // Redirect if already onboarded
-  if (user?.isOnboarded) {
-    navigate('/dashboard');
+  useEffect(() => {
+    if (!authLoading && profile?.is_onboarded) {
+      navigate('/dashboard');
+    }
+  }, [authLoading, profile?.is_onboarded, navigate]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
     return null;
   }
 
-  const checkUsernameUnique = (username: string): boolean => {
-    const storedUsernames = localStorage.getItem(REGISTERED_USERNAMES_KEY);
-    const usernames: string[] = storedUsernames ? JSON.parse(storedUsernames) : [];
-    return !usernames.includes(username.toLowerCase());
-  };
-
-  const registerUsername = (username: string) => {
-    const storedUsernames = localStorage.getItem(REGISTERED_USERNAMES_KEY);
-    const usernames: string[] = storedUsernames ? JSON.parse(storedUsernames) : [];
-    usernames.push(username.toLowerCase());
-    localStorage.setItem(REGISTERED_USERNAMES_KEY, JSON.stringify(usernames));
+  const checkUsernameUnique = async (username: string): Promise<boolean> => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('username', username.toLowerCase())
+      .maybeSingle();
+    return !data;
   };
 
   const validateStep1 = () => {
@@ -92,19 +107,20 @@ export default function Onboarding() {
       return false;
     }
 
-    if (!checkUsernameUnique(formData.username)) {
-      setErrors({ username: 'This username is already taken' });
-      return false;
-    }
-
     setErrors({});
     return true;
   };
 
-  const handleNext = () => {
-    if (validateStep1()) {
-      setStep(2);
+  const handleNext = async () => {
+    if (!validateStep1()) return;
+    
+    const isUnique = await checkUsernameUnique(formData.username);
+    if (!isUnique) {
+      setErrors({ username: 'This username is already taken' });
+      return;
     }
+    
+    setStep(2);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -125,29 +141,42 @@ export default function Onboarding() {
       return;
     }
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      // Update profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          username: formData.username.toLowerCase(),
+          name: formData.name,
+          department: formData.department as Department,
+          year_of_passout: formData.yearOfPassout,
+          is_onboarded: true,
+        })
+        .eq('id', user.id);
 
-    // Register the username
-    registerUsername(formData.username);
+      if (profileError) throw profileError;
 
-    // Update user with onboarding data
-    updateUser({
-      username: formData.username,
-      name: formData.name,
-      department: formData.department,
-      yearOfPassout: formData.yearOfPassout,
-      platformUsernames: {
-        leetcode: formData.leetcode || undefined,
-        codeforces: formData.codeforces || undefined,
-        codechef: formData.codechef || undefined,
-      },
-      isOnboarded: true,
-    });
+      // Insert platform usernames
+      const { error: platformError } = await supabase
+        .from('platform_usernames')
+        .insert({
+          user_id: user.id,
+          leetcode_username: formData.leetcode || null,
+          codeforces_username: formData.codeforces || null,
+          codechef_username: formData.codechef || null,
+        });
 
-    toast.success('Welcome aboard! Your profile has been set up.');
-    setIsLoading(false);
-    navigate('/dashboard');
+      if (platformError) throw platformError;
+
+      await refreshProfile();
+      toast.success('Welcome aboard! Your profile has been set up.');
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Onboarding error:', error);
+      toast.error('Failed to complete setup. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

@@ -7,24 +7,27 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { departments } from '@/lib/mock-data';
+import { DEPARTMENTS } from '@/types';
 import { Save, Bell, Moon, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useTheme } from 'next-themes';
 
 export default function Settings() {
-  const { user, updateUser } = useAuth();
+  const { user, profile, updateProfile } = useAuth();
   const { theme, setTheme } = useTheme();
-  const [name, setName] = useState(user?.name || '');
-  const [department, setDepartment] = useState(user?.department || '');
+  const [name, setName] = useState(profile?.name || '');
   const [notifications, setNotifications] = useState(true);
 
-  if (!user) return null;
+  if (!user || !profile) return null;
 
-  const handleSaveProfile = () => {
-    updateUser({ name, department });
-    toast.success('Profile updated successfully!');
+  const handleSaveProfile = async () => {
+    try {
+      await updateProfile({ name });
+      toast.success('Profile updated successfully!');
+    } catch (error) {
+      toast.error('Failed to update profile');
+    }
   };
 
   return (
@@ -47,13 +50,13 @@ export default function Settings() {
             <CardContent className="space-y-6">
               <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20 border-2 border-primary/20">
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarImage src={profile.avatar || ''} alt={profile.name || ''} />
                   <AvatarFallback className="bg-primary/10 text-2xl text-primary">
-                    {user.name.charAt(0)}
+                    {(profile.name || 'U').charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium text-foreground">{user.email}</p>
+                  <p className="font-medium text-foreground">{profile.email || user.email}</p>
                   <p className="text-sm text-muted-foreground">
                     Profile picture from Google
                   </p>
@@ -72,16 +75,17 @@ export default function Settings() {
 
               <div className="space-y-2">
                 <Label htmlFor="department">Department</Label>
-                <Select value={department} onValueChange={setDepartment}>
-                  <SelectTrigger className="bg-secondary/50">
+                <Select value={profile.department || ''} disabled>
+                  <SelectTrigger className="bg-secondary/50 opacity-70">
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
-                    {departments.map(dept => (
-                      <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                    {DEPARTMENTS.map(dept => (
+                      <SelectItem key={dept.value} value={dept.value}>{dept.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-muted-foreground">Department cannot be changed. Contact admin.</p>
               </div>
 
               <Button onClick={handleSaveProfile} className="w-full">
