@@ -29,12 +29,12 @@ const navItems = [
 
 export function Sidebar() {
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { profile, role, logout } = useAuth();
 
-  if (!user) return null;
+  if (!profile) return null;
 
   const filteredNav = navItems.filter((item) =>
-    item.roles.includes(user.role)
+    item.roles.includes(role || 'USER')
   );
 
   return (
@@ -78,17 +78,17 @@ export function Sidebar() {
         <div className="p-4">
           <div className="flex items-center gap-3 rounded-lg bg-secondary/50 p-3">
             <Avatar className="h-10 w-10 border-2 border-primary/20">
-              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarImage src={profile.avatar || ''} alt={profile.name || ''} />
               <AvatarFallback className="bg-primary/10 text-primary">
-                {user.name.charAt(0)}
+                {(profile.name || 'U').charAt(0)}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 overflow-hidden">
               <p className="truncate text-sm font-medium text-foreground">
-                {user.name}
+                {profile.name}
               </p>
               <p className="truncate text-xs text-muted-foreground">
-                {user.role.replace('_', ' ')}
+                {(role || 'USER').replace('_', ' ')}
               </p>
             </div>
           </div>

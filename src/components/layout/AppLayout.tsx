@@ -12,7 +12,7 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children, requiredRoles }: AppLayoutProps) {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { profile, role, isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -29,7 +29,7 @@ export function AppLayout({ children, requiredRoles }: AppLayoutProps) {
     return <Navigate to="/" replace />;
   }
 
-  if (requiredRoles && user && !requiredRoles.includes(user.role)) {
+  if (requiredRoles && role && !requiredRoles.includes(role as 'USER' | 'ADMIN' | 'SUPER_ADMIN')) {
     return <Navigate to="/dashboard" replace />;
   }
 

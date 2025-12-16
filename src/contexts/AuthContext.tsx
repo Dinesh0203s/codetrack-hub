@@ -1,88 +1,170 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, AuthState } from '@/types';
-import { mockUsers } from '@/lib/mock-data';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
+
+type Profile = Database['public']['Tables']['profiles']['Row'];
+type AppRole = Database['public']['Enums']['app_role'];
+
+interface AuthState {
+  user: User | null;
+  session: Session | null;
+  profile: Profile | null;
+  role: AppRole | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+}
 
 interface AuthContextType extends AuthState {
-  login: () => void;
-  logout: () => void;
-  updateUser: (updates: Partial<User>) => void;
+  signInWithGoogle: () => Promise<void>;
+  logout: () => Promise<void>;
+  updateProfile: (updates: Partial<Omit<Profile, 'id' | 'created_at' | 'updated_at'>>) => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'cp_tracker_auth';
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
+    session: null,
+    profile: null,
+    role: null,
     isAuthenticated: false,
     isLoading: true,
   });
 
+  const fetchProfile = async (userId: string) => {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
+    
+    return profile;
+  };
+
+  const fetchRole = async (userId: string): Promise<AppRole> => {
+    const { data: roleData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .maybeSingle();
+    
+    return roleData?.role || 'USER';
+  };
+
   useEffect(() => {
-    // Check for stored auth
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const user = JSON.parse(stored);
-        setAuthState({
-          user,
-          isAuthenticated: true,
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setAuthState(prev => ({
+          ...prev,
+          session,
+          user: session?.user ?? null,
+          isAuthenticated: !!session?.user,
           isLoading: false,
-        });
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
-        setAuthState((prev) => ({ ...prev, isLoading: false }));
+        }));
+
+        // Defer profile/role fetch to avoid deadlock
+        if (session?.user) {
+          setTimeout(async () => {
+            const profile = await fetchProfile(session.user.id);
+            const role = await fetchRole(session.user.id);
+            setAuthState(prev => ({
+              ...prev,
+              profile,
+              role,
+            }));
+          }, 0);
+        } else {
+          setAuthState(prev => ({
+            ...prev,
+            profile: null,
+            role: null,
+          }));
+        }
       }
-    } else {
-      setAuthState((prev) => ({ ...prev, isLoading: false }));
-    }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setAuthState(prev => ({
+        ...prev,
+        session,
+        user: session?.user ?? null,
+        isAuthenticated: !!session?.user,
+        isLoading: false,
+      }));
+
+      if (session?.user) {
+        Promise.all([
+          fetchProfile(session.user.id),
+          fetchRole(session.user.id)
+        ]).then(([profile, role]) => {
+          setAuthState(prev => ({
+            ...prev,
+            profile,
+            role,
+          }));
+        });
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const login = () => {
-    // Mock Google OAuth - create new user without onboarding completed
-    const newUser: User = {
-      id: `user_${Date.now()}`,
-      name: 'New User',
-      email: 'newuser@example.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=newuser',
-      role: 'USER',
-      department: '',
-      isActive: true,
-      isOnboarded: false,
-      createdAt: new Date().toISOString(),
-      platformUsernames: {},
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
-    setAuthState({
-      user: newUser,
-      isAuthenticated: true,
-      isLoading: false,
+  const signInWithGoogle = async () => {
+    const redirectUrl = `${window.location.origin}/`;
+    
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl,
+      },
     });
-  };
 
-  const logout = () => {
-    localStorage.removeItem(STORAGE_KEY);
-    setAuthState({
-      user: null,
-      isAuthenticated: false,
-      isLoading: false,
-    });
-  };
-
-  const updateUser = (updates: Partial<User>) => {
-    if (authState.user) {
-      const updatedUser = { ...authState.user, ...updates };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedUser));
-      setAuthState((prev) => ({
-        ...prev,
-        user: updatedUser,
-      }));
+    if (error) {
+      console.error('Google sign in error:', error);
+      throw error;
     }
+  };
+
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Logout error:', error);
+      throw error;
+    }
+  };
+
+  const updateProfile = async (updates: Partial<Omit<Profile, 'id' | 'created_at' | 'updated_at'>>) => {
+    if (!authState.user) return;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', authState.user.id);
+
+    if (error) {
+      console.error('Profile update error:', error);
+      throw error;
+    }
+
+    // Refresh profile
+    const profile = await fetchProfile(authState.user.id);
+    setAuthState(prev => ({ ...prev, profile }));
+  };
+
+  const refreshProfile = async () => {
+    if (!authState.user) return;
+    const profile = await fetchProfile(authState.user.id);
+    const role = await fetchRole(authState.user.id);
+    setAuthState(prev => ({ ...prev, profile, role }));
   };
 
   return (
-    <AuthContext.Provider value={{ ...authState, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ ...authState, signInWithGoogle, logout, updateProfile, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );
