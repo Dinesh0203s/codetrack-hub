@@ -5,35 +5,9 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { RefreshCw, Lock } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-
-interface PlatformUsernames {
-  leetcode_username: string | null;
-  codeforces_username: string | null;
-  codechef_username: string | null;
-}
 
 export function UsernameForm() {
   const { user } = useAuth();
-  const [platformUsernames, setPlatformUsernames] = useState<PlatformUsernames | null>(null);
-
-  useEffect(() => {
-    if (user) {
-      fetchPlatformUsernames();
-    }
-  }, [user]);
-
-  const fetchPlatformUsernames = async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from('platform_usernames')
-      .select('*')
-      .eq('user_id', user.id)
-      .maybeSingle();
-    
-    setPlatformUsernames(data);
-  };
 
   const handleRefresh = () => {
     toast.info('Fetching latest stats from platforms...');
@@ -62,7 +36,7 @@ export function UsernameForm() {
             </Label>
             <Input
               id="leetcode"
-              value={platformUsernames?.leetcode_username || 'Not set'}
+              value={user?.platformUsernames.leetcode || 'Not set'}
               disabled
               className="bg-secondary/50 font-mono opacity-70"
             />
@@ -74,7 +48,7 @@ export function UsernameForm() {
             </Label>
             <Input
               id="codeforces"
-              value={platformUsernames?.codeforces_username || 'Not set'}
+              value={user?.platformUsernames.codeforces || 'Not set'}
               disabled
               className="bg-secondary/50 font-mono opacity-70"
             />
@@ -86,7 +60,7 @@ export function UsernameForm() {
             </Label>
             <Input
               id="codechef"
-              value={platformUsernames?.codechef_username || 'Not set'}
+              value={user?.platformUsernames.codechef || 'Not set'}
               disabled
               className="bg-secondary/50 font-mono opacity-70"
             />

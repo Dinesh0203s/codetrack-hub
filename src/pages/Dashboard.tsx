@@ -7,18 +7,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { CalendarDays, Mail, Building } from 'lucide-react';
-import { DEPARTMENTS } from '@/types';
 
 export default function Dashboard() {
-  const { user, profile, role } = useAuth();
+  const { user } = useAuth();
 
-  if (!user || !profile) return null;
+  if (!user) return null;
 
   const leetcodeStats = getPlatformStats(user.id, 'leetcode');
   const codeforcesStats = getPlatformStats(user.id, 'codeforces');
   const codechefStats = getPlatformStats(user.id, 'codechef');
-
-  const departmentLabel = DEPARTMENTS.find(d => d.value === profile.department)?.label || profile.department;
 
   return (
     <AppLayout>
@@ -41,34 +38,32 @@ export default function Dashboard() {
               <div className="h-20 bg-gradient-primary" />
               <CardContent className="-mt-10 space-y-4">
                 <Avatar className="h-20 w-20 border-4 border-card">
-                  <AvatarImage src={profile.avatar || ''} alt={profile.name || ''} />
+                  <AvatarImage src={user.avatar} alt={user.name} />
                   <AvatarFallback className="bg-primary text-2xl text-primary-foreground">
-                    {(profile.name || 'U').charAt(0)}
+                    {user.name.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">{profile.name}</h2>
+                  <h2 className="text-xl font-bold text-foreground">{user.name}</h2>
                   <Badge
-                    variant={role === 'SUPER_ADMIN' ? 'default' : 'secondary'}
+                    variant={user.role === 'SUPER_ADMIN' ? 'default' : 'secondary'}
                     className="mt-1"
                   >
-                    {(role || 'USER').replace('_', ' ')}
+                    {user.role.replace('_', ' ')}
                   </Badge>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Mail className="h-4 w-4" />
-                    {profile.email || user.email}
+                    {user.email}
                   </div>
-                  {departmentLabel && (
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Building className="h-4 w-4" />
-                      {departmentLabel}
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Building className="h-4 w-4" />
+                    {user.department}
+                  </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <CalendarDays className="h-4 w-4" />
-                    Joined {new Date(profile.created_at || user.created_at || '').toLocaleDateString()}
+                    Joined {new Date(user.createdAt).toLocaleDateString()}
                   </div>
                 </div>
               </CardContent>
@@ -88,17 +83,17 @@ export default function Dashboard() {
                 <PlatformCard
                   platform="leetcode"
                   stats={leetcodeStats}
-                  username={undefined}
+                  username={user.platformUsernames.leetcode}
                 />
                 <PlatformCard
                   platform="codeforces"
                   stats={codeforcesStats}
-                  username={undefined}
+                  username={user.platformUsernames.codeforces}
                 />
                 <PlatformCard
                   platform="codechef"
                   stats={codechefStats}
-                  username={undefined}
+                  username={user.platformUsernames.codechef}
                   className="md:col-span-2 xl:col-span-1"
                 />
               </CardContent>
